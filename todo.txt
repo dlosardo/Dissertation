@@ -1,0 +1,15 @@
+koopman recursion gets rid of need to invert. supposed to give equivalent results, except for numerical advantages.
+
+bigger impact from panel data than intensive repeated measures.
+
+group process noise and time series parameters.
+null condition is a lot worse, other conditions are comparable to each other.
+what goes into the koopman and dejong approaches for model-implied, null?
+
+nonstationary model - see whether the two diffuse approaches work better than large kappa for panel data? quality of point estimates and standard error estimation. convergence. 
+
+compared to even other severe misspecifications - like assuming null. not estimating IC is the worst thing you can do. worst thing you can do. 
+
+ask lu to check if gtran part for LDL is implemented correctly.
+
+double check to see free parm conv noSE 
