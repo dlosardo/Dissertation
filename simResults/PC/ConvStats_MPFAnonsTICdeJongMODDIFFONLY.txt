@@ -1,0 +1,6 @@
+"Model" "TrueIC" "ICFit" "np" "nt" "NAN" "StrongConv" "WeakConv" "NoConv" "failedInvertSym" "failedDecomp" "noSE" "outlier"
+"temp" "PFAnons" "deJong" "FreeParm" "200" "5" "0" "500" "0" "0" "0" "0" "0" "0"
+"temp" "PFAnons" "deJong" "Null" "200" "5" "0" "500" "0" "0" "0" "0" "0" "0"
+"temp" "PFAnons" "deJong" "deJong" "200" "5" "6" "458" "0" "42" "37" "0" "7" "0"
+"temp" "PFAnons" "deJong" "EKF" "200" "5" "0" "500" "0" "0" "0" "0" "0" "0"
+"temp" "PFAnons" "deJong" "largeK" "200" "5" "0" "500" "0" "0" "0" "0" "0" "0"

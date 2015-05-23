@@ -1,0 +1,18 @@
+% latex table generated in R 3.0.0 by xtable 1.7-1 package
+% Sun Jun 30 11:50:44 2013
+\begin{table}[ht]
+\centering
+\begin{tabular}{llllllllllll}
+  \hline
+  \hline
+TrueIC & FittedIC & Final # Reps & Strong Conv & Weak Conv & No Conv & Outliers & No SEs & AIC & BIC & RMSE lvs & Time \\ 
+  deJong & FreeParm & 500 & 500 & 0 & 0 & 0 & 0 & 0 & 0 & 0.413 & 3.921 \\ 
+  deJong & Null & 500 & 500 & 0 & 0 & 0 & 0 & 0 & 0 & 0.966 & 2.724 \\ 
+  deJong & deJong & 458 & 458 & 0 & 42 & 6 & 7 & 262 & 262 & 0.422 & 5.001 \\ 
+  deJong & EKF & 500 & 500 & 0 & 0 & 0 & 0 & 238 & 238 & 0.422 & 2.658 \\ 
+  deJong & largeK & 500 & 500 & 0 & 0 & 0 & 0 & 0 & 0 & 0.422 & 2.542 \\ 
+   \hline
+\end{tabular}
+\caption{Simulation Results: Comparison Across Initial Condition Specifications} 
+\end{table}
+

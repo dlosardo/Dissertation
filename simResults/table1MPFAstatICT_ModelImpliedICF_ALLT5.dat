@@ -1,0 +1,115 @@
+% latex table generated in R 3.0.0 by xtable 1.7-1 package
+% Sat Jun  1 11:35:01 2013
+\begin{table}[ht]
+\centering
+\begin{tabular}{lllllllllll}
+  \hline
+  \hline
+TrueIC & FittedIC & True Value & $\hat{\theta}$ & $SE_\theta$ & $\hat{SE}$ & Bias & RB & RMSE & cov & pow \\ 
+  ModelImplied & ModelImplied & 1.2 & 1.2 & 0.05 & 0.05 & 0 & 0 & 0.05 & 0.95 & 1 \\ 
+  ModelImplied & ModelImplied & 0.8 & 0.8 & 0.05 & 0.05 & 0 & 0 & 0.05 & 0.94 & 1 \\ 
+  ModelImplied & ModelImplied & 0.9 & 0.9 & 0.04 & 0.04 & 0 & 0 & 0.04 & 0.94 & 1 \\ 
+  ModelImplied & ModelImplied & 1.1 & 1.1 & 0.04 & 0.04 & 0 & 0 & 0.04 & 0.97 & 1 \\ 
+  ModelImplied & ModelImplied & 1 & 0.84 & 0.07 & 0.08 & -0.16 & -0.16 & 0.18 & 0.43 & 1 \\ 
+  ModelImplied & ModelImplied & 0.4 & 0.34 & 0.05 & 0.05 & -0.06 & -0.16 & 0.08 & 0.69 & 1 \\ 
+  ModelImplied & ModelImplied & 1 & 0.97 & 0.09 & 0.08 & -0.03 & -0.03 & 0.09 & 0.9 & 1 \\ 
+  ModelImplied & ModelImplied & 0.5 & 0.5 & 0.03 & 0.03 & 0 & 0 & 0.03 & 0.96 & 1 \\ 
+  ModelImplied & ModelImplied & -0.3 & -0.3 & 0.03 & 0.03 & 0 & 0.01 & 0.03 & 0.95 & 1 \\ 
+  ModelImplied & ModelImplied & -0.1 & -0.1 & 0.03 & 0.03 & 0 & -0.01 & 0.03 & 0.95 & 0.84 \\ 
+  ModelImplied & ModelImplied & 0.6 & 0.6 & 0.03 & 0.03 & 0 & -0.01 & 0.03 & 0.93 & 1 \\ 
+  ModelImplied & ModelImplied & 0.8 & 0.8 & 0.05 & 0.06 & 0 & 0 & 0.05 & 0.96 & 1 \\ 
+  ModelImplied & ModelImplied & 0.6 & 0.6 & 0.07 & 0.07 & 0 & -0.01 & 0.07 & 0.94 & 1 \\ 
+  ModelImplied & ModelImplied & 2 & 2 & 0.1 & 0.1 & 0 & 0 & 0.1 & 0.93 & 1 \\ 
+  ModelImplied & ModelImplied & 1 & 0.99 & 0.06 & 0.06 & -0.01 & -0.01 & 0.06 & 0.96 & 1 \\ 
+  ModelImplied & ModelImplied & 1.5 & 1.5 & 0.08 & 0.08 & 0 & 0 & 0.08 & 0.94 & 1 \\ 
+  ModelImplied & ModelImplied & 0.4 & 0.4 & 0.05 & 0.05 & 0 & 0 & 0.05 & 0.95 & 1 \\ 
+  ModelImplied & FreeParm & 1.2 & 1.2 & 0.05 & 0 & 0 & 0 & 0.05 & 0.4 & 1 \\ 
+  ModelImplied & FreeParm & 0.8 & 0.8 & 0.05 & 0 & 0 & 0 & 0.05 & 0.39 & 1 \\ 
+  ModelImplied & FreeParm & 0.9 & 0.9 & 0.04 & 1.49 & 0 & 0 & 0.04 & 1 & 1 \\ 
+  ModelImplied & FreeParm & 1.1 & 1.1 & 0.04 & 0.06 & 0 & 0 & 0.04 & 0.65 & 1 \\ 
+  ModelImplied & FreeParm & 1 & 0.84 & 0.07 & 1.56 & -0.16 & -0.16 & 0.18 & 1 & 1 \\ 
+  ModelImplied & FreeParm & 0.4 & 0.34 & 0.05 & 0.05 & -0.06 & -0.16 & 0.08 & 0.69 & 1 \\ 
+  ModelImplied & FreeParm & 1 & 0.97 & 0.09 & 0.05 & -0.03 & -0.03 & 0.09 & 0.68 & 1 \\ 
+  ModelImplied & FreeParm & 0.5 & 0.5 & 0.03 & 0.04 & 0 & 0 & 0.03 & 0.97 & 1 \\ 
+  ModelImplied & FreeParm & -0.3 & -0.3 & 0.03 & 0.04 & 0 & 0.01 & 0.03 & 0.97 & 1 \\ 
+  ModelImplied & FreeParm & -0.1 & -0.1 & 0.04 & 0.08 & 0 & 0 & 0.04 & 1 & 0.85 \\ 
+  ModelImplied & FreeParm & 0.6 & 0.6 & 0.03 & 0.05 & 0 & -0.01 & 0.03 & 1 & 1 \\ 
+  ModelImplied & FreeParm & 0.8 & 0.8 & 0.05 & 0.08 & 0 & 0 & 0.05 & 1 & 1 \\ 
+  ModelImplied & FreeParm & 0.6 & 0.6 & 0.07 & 0.03 & 0 & -0.01 & 0.07 & 0.72 & 1 \\ 
+  ModelImplied & FreeParm & 2 & 2 & 0.1 & 0.03 & 0 & 0 & 0.1 & 0.49 & 1 \\ 
+  ModelImplied & FreeParm & 1 & 0.99 & 0.06 & 0.03 & -0.01 & -0.01 & 0.06 & 0.75 & 1 \\ 
+  ModelImplied & FreeParm & 1.5 & 1.5 & 0.08 & 0.03 & 0 & 0 & 0.08 & 0.56 & 1 \\ 
+  ModelImplied & FreeParm & 0.4 & 0.4 & 0.05 & 0.06 & 0 & 0 & 0.05 & 0.97 & 1 \\ 
+  ModelImplied & Null & 1.2 & 1.13 & 0.04 & 0.06 & -0.07 & -0.06 & 0.08 & 0.85 & 1 \\ 
+  ModelImplied & Null & 0.8 & 0.86 & 0.06 & 0.06 & 0.06 & 0.08 & 0.08 & 0.85 & 1 \\ 
+  ModelImplied & Null & 0.9 & 0.93 & 0.05 & 0.06 & 0.03 & 0.04 & 0.06 & 0.95 & 1 \\ 
+  ModelImplied & Null & 1.1 & 1.02 & 0.03 & 0.05 & -0.08 & -0.07 & 0.09 & 0.68 & 1 \\ 
+  ModelImplied & Null & 1 & 0.95 & 0.09 & 0.1 & -0.05 & -0.05 & 0.1 & 0.95 & 1 \\ 
+  ModelImplied & Null & 0.4 & 0.29 & 0.06 & 0.06 & -0.11 & -0.27 & 0.13 & 0.49 & 1 \\ 
+  ModelImplied & Null & 1 & 1.04 & 0.1 & 0.1 & 0.04 & 0.04 & 0.11 & 0.93 & 1 \\ 
+  ModelImplied & Null & 0.5 & 0.55 & 0.04 & 0.05 & 0.05 & 0.09 & 0.06 & 0.84 & 1 \\ 
+  ModelImplied & Null & -0.3 & -0.31 & 0.04 & 0.05 & -0.01 & 0.03 & 0.04 & 0.96 & 1 \\ 
+  ModelImplied & Null & -0.1 & -0.1 & 0.05 & 0.05 & 0 & -0.04 & 0.05 & 0.97 & 0.84 \\ 
+  ModelImplied & Null & 0.6 & 0.63 & 0.04 & 0.05 & 0.03 & 0.06 & 0.05 & 0.89 & 1 \\ 
+  ModelImplied & Null & 0.8 & 1.2 & 0.08 & 0.06 & 0.4 & 0.5 & 0.41 & 0 & 1 \\ 
+  ModelImplied & Null & 0.6 & 1.35 & 0.08 & 0.07 & 0.75 & 1.25 & 0.75 & 0 & 1 \\ 
+  ModelImplied & Null & 2 & 2.15 & 0.12 & 0.11 & 0.15 & 0.08 & 0.19 & 0.7 & 1 \\ 
+  ModelImplied & Null & 1 & 1.37 & 0.08 & 0.07 & 0.37 & 0.37 & 0.38 & 0 & 1 \\ 
+  ModelImplied & Null & 1.5 & 1.74 & 0.1 & 0.09 & 0.24 & 0.16 & 0.26 & 0.24 & 1 \\ 
+  ModelImplied & Null & 0.4 & 1.06 & 0.07 & 0.06 & 0.66 & 1.65 & 0.66 & 0 & 1 \\ 
+  ModelImplied & deJong & 1.2 & 1.05 & 0.04 & 0.03 & -0.15 & -0.13 & 0.16 & 0.01 & 1 \\ 
+  ModelImplied & deJong & 0.8 & 0.72 & 0.04 & 0.04 & -0.08 & -0.1 & 0.09 & 0.43 & 1 \\ 
+  ModelImplied & deJong & 0.9 & 0.8 & 0.04 & 0.03 & -0.1 & -0.11 & 0.11 & 0.18 & 1 \\ 
+  ModelImplied & deJong & 1.1 & 0.96 & 0.03 & 0.03 & -0.14 & -0.13 & 0.14 & 0 & 1 \\ 
+  ModelImplied & deJong & 1 & 1 & 0.08 & 0.09 & 0 & 0 & 0.08 & 0.96 & 1 \\ 
+  ModelImplied & deJong & 0.4 & 0.41 & 0.05 & 0.06 & 0.01 & 0.02 & 0.05 & 0.97 & 1 \\ 
+  ModelImplied & deJong & 1 & 1.17 & 0.09 & 0.09 & 0.17 & 0.17 & 0.2 & 0.53 & 1 \\ 
+  ModelImplied & deJong & 0.5 & 0.48 & 0.03 & 0.03 & -0.02 & -0.05 & 0.04 & 0.89 & 1 \\ 
+  ModelImplied & deJong & -0.3 & -0.29 & 0.03 & 0.03 & 0.01 & -0.05 & 0.03 & 0.94 & 1 \\ 
+  ModelImplied & deJong & -0.1 & -0.1 & 0.03 & 0.03 & 0 & -0.04 & 0.03 & 0.94 & 0.85 \\ 
+  ModelImplied & deJong & 0.6 & 0.58 & 0.03 & 0.03 & -0.02 & -0.04 & 0.04 & 0.89 & 1 \\ 
+  ModelImplied & deJong & 0.8 & 0.72 & 0.05 & 0.06 & -0.08 & -0.1 & 0.1 & 0.7 & 1 \\ 
+  ModelImplied & deJong & 0.6 & 0.71 & 0.07 & 0.06 & 0.11 & 0.18 & 0.13 & 0.62 & 1 \\ 
+  ModelImplied & deJong & 2 & 2 & 0.1 & 0.1 & 0 & 0 & 0.1 & 0.94 & 1 \\ 
+  ModelImplied & deJong & 1 & 0.94 & 0.06 & 0.06 & -0.06 & -0.06 & 0.08 & 0.84 & 1 \\ 
+  ModelImplied & deJong & 1.5 & 1.5 & 0.08 & 0.08 & 0 & 0 & 0.08 & 0.94 & 1 \\ 
+  ModelImplied & deJong & 0.4 & 0.46 & 0.05 & 0.04 & 0.06 & 0.16 & 0.08 & 0.73 & 1 \\ 
+  ModelImplied & EKF & 1.2 & 1.05 & 0.04 & 0.03 & -0.15 & -0.13 & 0.16 & 0.01 & 1 \\ 
+  ModelImplied & EKF & 0.8 & 0.72 & 0.04 & 0.04 & -0.08 & -0.1 & 0.09 & 0.42 & 1 \\ 
+  ModelImplied & EKF & 0.9 & 0.8 & 0.04 & 0.03 & -0.1 & -0.11 & 0.11 & 0.18 & 1 \\ 
+  ModelImplied & EKF & 1.1 & 0.96 & 0.03 & 0.03 & -0.14 & -0.13 & 0.14 & 0 & 1 \\ 
+  ModelImplied & EKF & 1 & 1 & 0.08 & 0.09 & 0 & 0 & 0.08 & 0.96 & 1 \\ 
+  ModelImplied & EKF & 0.4 & 0.41 & 0.05 & 0.06 & 0.01 & 0.02 & 0.05 & 0.97 & 1 \\ 
+  ModelImplied & EKF & 1 & 1.17 & 0.09 & 0.09 & 0.17 & 0.17 & 0.2 & 0.52 & 1 \\ 
+  ModelImplied & EKF & 0.5 & 0.48 & 0.03 & 0.03 & -0.02 & -0.05 & 0.04 & 0.89 & 1 \\ 
+  ModelImplied & EKF & -0.3 & -0.29 & 0.03 & 0.03 & 0.01 & -0.05 & 0.03 & 0.93 & 1 \\ 
+  ModelImplied & EKF & -0.1 & -0.1 & 0.03 & 0.03 & 0 & -0.04 & 0.03 & 0.94 & 0.84 \\ 
+  ModelImplied & EKF & 0.6 & 0.58 & 0.03 & 0.03 & -0.02 & -0.04 & 0.04 & 0.9 & 1 \\ 
+  ModelImplied & EKF & 0.8 & 0.72 & 0.05 & 0.06 & -0.08 & -0.1 & 0.1 & 0.7 & 1 \\ 
+  ModelImplied & EKF & 0.6 & 0.71 & 0.07 & 0.06 & 0.11 & 0.18 & 0.13 & 0.62 & 1 \\ 
+  ModelImplied & EKF & 2 & 2 & 0.1 & 0.1 & 0 & 0 & 0.1 & 0.93 & 1 \\ 
+  ModelImplied & EKF & 1 & 0.94 & 0.06 & 0.06 & -0.06 & -0.06 & 0.08 & 0.84 & 1 \\ 
+  ModelImplied & EKF & 1.5 & 1.5 & 0.08 & 0.08 & 0 & 0 & 0.08 & 0.94 & 1 \\ 
+  ModelImplied & EKF & 0.4 & 0.46 & 0.05 & 0.04 & 0.06 & 0.16 & 0.08 & 0.72 & 1 \\ 
+  ModelImplied & largeK & 1.2 & 1.05 & 0.04 & 0.03 & -0.15 & -0.13 & 0.16 & 0.01 & 1 \\ 
+  ModelImplied & largeK & 0.8 & 0.72 & 0.04 & 0.04 & -0.08 & -0.1 & 0.09 & 0.42 & 1 \\ 
+  ModelImplied & largeK & 0.9 & 0.8 & 0.04 & 0.03 & -0.1 & -0.11 & 0.11 & 0.18 & 1 \\ 
+  ModelImplied & largeK & 1.1 & 0.96 & 0.03 & 0.03 & -0.14 & -0.13 & 0.14 & 0 & 1 \\ 
+  ModelImplied & largeK & 1 & 1 & 0.08 & 0.09 & 0 & 0 & 0.08 & 0.96 & 1 \\ 
+  ModelImplied & largeK & 0.4 & 0.41 & 0.05 & 0.06 & 0.01 & 0.02 & 0.05 & 0.97 & 1 \\ 
+  ModelImplied & largeK & 1 & 1.17 & 0.09 & 0.09 & 0.17 & 0.17 & 0.2 & 0.52 & 1 \\ 
+  ModelImplied & largeK & 0.5 & 0.48 & 0.03 & 0.03 & -0.02 & -0.05 & 0.04 & 0.89 & 1 \\ 
+  ModelImplied & largeK & -0.3 & -0.29 & 0.03 & 0.03 & 0.01 & -0.05 & 0.03 & 0.93 & 1 \\ 
+  ModelImplied & largeK & -0.1 & -0.1 & 0.03 & 0.03 & 0 & -0.04 & 0.03 & 0.94 & 0.84 \\ 
+  ModelImplied & largeK & 0.6 & 0.58 & 0.03 & 0.03 & -0.02 & -0.04 & 0.04 & 0.9 & 1 \\ 
+  ModelImplied & largeK & 0.8 & 0.72 & 0.05 & 0.06 & -0.08 & -0.1 & 0.1 & 0.7 & 1 \\ 
+  ModelImplied & largeK & 0.6 & 0.71 & 0.07 & 0.06 & 0.11 & 0.18 & 0.13 & 0.62 & 1 \\ 
+  ModelImplied & largeK & 2 & 2 & 0.1 & 0.1 & 0 & 0 & 0.1 & 0.93 & 1 \\ 
+  ModelImplied & largeK & 1 & 0.94 & 0.06 & 0.06 & -0.06 & -0.06 & 0.08 & 0.84 & 1 \\ 
+  ModelImplied & largeK & 1.5 & 1.5 & 0.08 & 0.08 & 0 & 0 & 0.08 & 0.94 & 1 \\ 
+  ModelImplied & largeK & 0.4 & 0.46 & 0.05 & 0.04 & 0.06 & 0.16 & 0.08 & 0.73 & 1 \\ 
+   \hline
+\end{tabular}
+\caption{Simulation Results} 
+\end{table}
+

@@ -1,0 +1,23 @@
+% latex table generated in R 3.0.0 by xtable 1.7-1 package
+% Wed Jun 26 18:45:19 2013
+\begin{table}[ht]
+\centering
+\begin{tabular}{llllllllllll}
+  \hline
+  \hline
+TrueIC & FittedIC & Final # Reps & Strong Conv & Weak Conv & No Conv & Outliers & No SEs & AIC & BIC & RMSE lvs & Time \\ 
+  FreeParm & FreeParm & 500 & 500 & 0 & 0 & 0 & 0 & 0 & 0 & 0.38 & 3.915 \\ 
+  FreeParm & Null & 500 & 500 & 0 & 0 & 0 & 0 & 0 & 0 & 0.678 & 2.495 \\ 
+  FreeParm & deJong & 500 & 500 & 0 & 0 & 0 & 0 & 299 & 299 & 0.399 & 5.035 \\ 
+  FreeParm & EKF & 500 & 500 & 0 & 0 & 0 & 0 & 201 & 201 & 0.399 & 2.727 \\ 
+  FreeParm & largeK & 500 & 500 & 0 & 0 & 0 & 0 & 0 & 0 & 0.399 & 2.606 \\ 
+  FreeParm & FreeParm & 331 & 452 & 23 & 24 & 162 & 146 & 0 & 0 & 0.367 & 3.484 \\ 
+  FreeParm & Null & 336 & 497 & 2 & 0 & 162 & 0 & 0 & 0 & 0.407 & 2.359 \\ 
+  FreeParm & deJong & 444 & 444 & 0 & 55 & 19 & 13 & 294 & 294 & 0.367 & 3.05 \\ 
+  FreeParm & EKF & 334 & 436 & 4 & 10 & 161 & 0 & 188 & 188 & 0.367 & 2.399 \\ 
+  FreeParm & largeK & 335 & 476 & 2 & 21 & 161 & 1 & 1 & 1 & 0.367 & 2.426 \\ 
+   \hline
+\end{tabular}
+\caption{Simulation Results: Comparison Across Initial Condition Specifications} 
+\end{table}
+
