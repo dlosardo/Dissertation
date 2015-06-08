@@ -1,6 +1,6 @@
 rm(list=ls(all=TRUE))
 #sourcing functions
-source("C:/Documents and Settings/Diane Losardo/Desktop/dissertation/Dissertation/Dissertation/functions.R")
+source("src/R/functions.R")
 source="C:/Documents and Settings/Diane Losardo/Desktop/dissertation/Dissertation/Dissertation" #where source files are located
 wd="C:/Documents and Settings/Diane Losardo/Desktop/dissertation/datafiles" #where the batch files are located, outputting data
 outputDiri="C:/Documents and Settings/Diane Losardo/Desktop/dissertation/results" #where SAS outputs results and I keep results

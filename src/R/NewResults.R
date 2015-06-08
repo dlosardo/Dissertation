@@ -2,89 +2,74 @@
 # Compile results from dissertation #
 # Author: Diane Losardo             #
 #####################################
+library(xtable)
+library(outliers)
+library(plyr)
+library(reshape2)
+library(ggplot2)
 
-# Installing and including libraries
-# install.packages("xtable")
-# install.packages("outliers")
-library('xtable')
-library('outliers')
+source('src/R/functions.R')
 
 ################################################################
-#### CHANGE THESE APPROPRIATELY FOR DIFFERENT SIMULATION RUNS ##
 NO_MC = 500 # Number of Monte Carlo runs
 SAMPLE_SIZES = c(200, 20) # Sample sizes
 THE_TS = c(5, 50) # Number of time points
-
-MODEL = 2  	# 1 = PFA Stationary, 2 = PFA non-stationary, 3 = PFA with local linear trend
-# For next two variables:
-# 1=Model Implied, 2=Free Parameter, 3=Null Initial Condition,
-# 4=deJong DKF, 5=Koopman EKF, 6=large kappa approx
-TRUE_I = 4    # True Initial Condition
-FITTED_I = c(2,3,4,5,6)	# Fitted Initial Condition
-SMALL_POP = FALSE # FALSE if using mild-mod nonstatinary condition, TRUE for very mild nonstationary condition
-MOD_POP = FALSE # TRUE if using moderately nonstationary condition
-DIFF_ONLY = FALSE #TRUE if only looking at the diffuse approaches that all converged
-################################################################
-################################################################
-
-PROJ_DIR = "/Users/dlosardo/Documents/workspace/Dissertation" # where files for project are located
-RESULTS_DIR = "/Users/dlosardo/Documents/workspace/Dissertation/simResults/PC" # where results are stored
-NY = 6 # number of y variables
-
-# Sourcing functions
-source(paste(PROJ_DIR, "/functions.R", sep = "" ))
-
-# Variables corresponding to a given simulation run 
-noMC = NO_MC # Number of Monte Carlo runs
-sampleSizes = SAMPLE_SIZES # Sample sizes
-theTs = THE_TS    # Number of time points
-ny= NY # number of y variables
-
-model = MODEL  	# 1 = PFA Stationary, 2 = PFA non-stationary, 3 = PFA with local linear trend
-# For next two variables:
-# 1=Model Implied, 2=Free Parameter, 3=Null Initial Condition,
-# 4=deJong DKF, 5=Koopman EKF, 6=large kappa approx
-trueI = TRUE_I  	# True Initial Condition
-fittedI = FITTED_I	# Fitted Initial Condition
-smallpop = SMALL_POP
-small = NULL
-if (smallpop){
-  small = "small"
-}
-modpop = MOD_POP
-mod = NULL
-if (modpop){
-  mod = "MOD"
-}
-diffOnly <- DIFF_ONLY
-jDiff = NULL
-if (diffOnly){
-  jDiff = "DIFFONLY"
-}
-allICspecTRUE = c("ModelImplied","FreeParm","Null","deJong","EKF","largeK")
-modelNamei = c("PFAstat","PFAnons","PFALLT")
-PFAcolnames = c("modelName","ICspecTRUE","ICfitted", "RMSE", "N","T","Z21","Z31","Z52","Z62",
+IC_SPECS = c("ModelImplied","FreeParm","Null","deJong","EKF","largeK")
+MODEL_NAMES = c("PFAstat","PFAnons")
+PFA_COLNAMES = c("modelName","ICspecTRUE","ICfitted", "RMSE", "T","N","Z21","Z31","Z52","Z62",
                 "V11","V21","V22","T11","T21","T12","T22","U11","U22","U33","U44","U55","U66",
                 "seZ21","seZ31","seZ52","seZ62","seV11","seV21","seV22","seT11","seT21","seT12",
                 "seT22","seU11","seU22","seU33","seU44","seU55","seU66","LL","conv","invertSym","invertDec","time")
-PFAcolnamesFP=c("modelName","ICspecTRUE","ICfitted", "RMSE","N","T","Z21","Z31","Z52","Z62",
+PFA_COLNAMESFP = c("modelName","ICspecTRUE","ICfitted", "RMSE","T","N","Z21","Z31","Z52","Z62",
                 "V11","V21","V22","T11","T21","T12","T22","U11","U22","U33","U44","U55","U66",
                 "X01","X02","P011","P012","P022",
                 "seZ21","seZ31","seZ52","seZ62","seV11","seV21","seV22","seT11","seT21","seT12",
                 "seT22","seU11","seU22","seU33","seU44","seU55","seU66",
                 "seX01","seX02","seP011","seP012","seP022",
                 "LL","conv","invertSym","invertDec","time")
-parNames=c("Z21","Z31","Z52","Z62","V11","V21","V22","T11","T21","T12","T22","U11","U22","U33","U44","U55","U66",
+PAR_NAMES=c("Z21","Z31","Z52","Z62","V11","V21","V22","T11","T21","T12","T22","U11","U22","U33","U44","U55","U66",
            "X01","X02","P011","P012","P022")
+PARAM_TYPE=c(rep("measurement", 4), rep("process_noise", 3), rep("time_series", 4), rep("measurement", 6), rep("init_cond", 5))
+pop_values_freeparm_extras <- c(1,.5,1.2,.3,.7)
+POP_VALUES_STAT <- c(1.2,.8,.9,1.1,1,.4,1,.5,-.3,-.1,.6,.8,.6,2,1,1.5,.4, pop_values_freeparm_extras)
+POP_VALUES_NONSTAT <- c(1.2,.8,.9,1.1,.5,.1,.5,1.2,-.4,.6,.7,.8,.6,2,1,1.5,.4, pop_values_freeparm_extras)
 
-currentFitted = allICspecTRUE[fittedI]
-ICspecTRUE = allICspecTRUE[trueI]
-popValuesi=list(c(1.2,.8,.9,1.1,1,.4,1,.5,-.3,-.1,.6,.8,.6,2,1,1.5,.4),
-                c(1.2,.8,.9,1.1,
-                  .5,.1,.5,
-                  1.2,-.4,.6,.7,
-                  .8,.6,2,1,1.5,.4),
-                c(1.2,.8,1,.8,.4,.5,.8,.6,2))
+# create a population values dataframe that contains the following info
+pop_values_dat <- data.frame(param_name = rep(PAR_NAMES, length(MODEL_NAMES))
+                             , model_type = do.call("c", sapply(MODEL_NAMES, function(x) rep(x, length(PAR_NAMES)), simplify=F))
+                             , pop_values = c(POP_VALUES_STAT, POP_VALUES_NONSTAT)
+                             , param_type = rep(PARAM_TYPE, length(MODEL_NAMES)))
+
+#all results files:
+# 1. Nonstationary diffuse
+# 2. Nonstationary diffuse Moderate 
+# 3. Nonstationary Free Parameter
+# 4. Nonstationary Null
+# 5. Stationary Free Parameter
+# 6. Stationary Model Implied
+# 7. Stationary Null
+#PFAnons deJong
+#PFAnons FreeParm
+#PFAnons Null
+#PFAstat ModelImplied
+#PFAstat FreeParm
+#PFAstat Null
+model_names <- c(rep("PFAstat", 3), rep("PFAnons", 3))
+true_ics <- c("ModelImplied", "FreeParm", "Null", "deJong", "FreeParm", "Null")
+fitted_ics <- c("ModelImplied","FreeParm","Null","deJong","EKF","largeK")
+# read in sim results
+result_list <- mapply(function(model_name, true_ic){
+  list(read.table(file = sprintf("data/output/results/M%sICT_%sICF_ALL.dat", model_name, true_ic)
+             , stringsAsFactors = FALSE, fill = TRUE))
+}, model_names, true_ics)
+# name sim results
+result_list <- llply(result_list, name_results)
+# subsetting results so there are NO_MC reps for every simulation condition
+result_list <- llply(result_list
+                        , function(x) ddply(x, .(modelName, ICspecTRUE, ICfitted, N, T), function(y) y[1:NO_MC, ]))
+result_list <- llply(result_list
+                        , function(x) ddply(x, .(modelName, ICspecTRUE, ICfitted, N, T), add_reps))
+
 
 if (smallpop){popValuesi=list(c(1.2,.8,.9,1.1,1,.4,1,.5,-.3,-.1,.6,.8,.6,2,1,1.5,.4),
                               c(1.2,.8,.9,1.1,
@@ -98,294 +83,121 @@ if (modpop){popValuesi=list(c(1.2,.8,.9,1.1,1,.4,1,.5,-.3,-.1,.6,.8,.6,2,1,1.5,.
                                 1.2,-.4,.6, .7,
                                 .8,.6,2,1,1.5,.4),
                               c(1.2,.8,1,.8,.4,.5,.8,.6,2))}
-popValues = popValuesi[[model]]
-modelName = modelNamei[model]
 
-file = paste(RESULTS_DIR,"/M",modelName,"ICT_",ICspecTRUE,"ICF_All", mod, ".dat",sep="")
+# obtain convergence statistics
+convergence_stats <- llply(result_list, get_convergence_stats)
 
-nCol <- max(count.fields(file, sep = " "))
-outputs <- read.table(file,stringsAsFactors=FALSE,fill=TRUE,col.names=1:nCol)
+# subset to only results that converged properly
+result_list_subsetted <- llply(result_list, get_proper_results)
 
-#o <- matrix(readLines(file))
-#strsplit(o[1], " ")
-#outputs = read.table(file,stringsAsFactors=FALSE)
-#outputs = outputs[, -ncol(outputs)]
-# check to see if any rows of all NAs
-any(rowSums(is.na(outputs)) >= ncol(outputs)-1)
-
-convStats=NULL
-for (dp in 1:length(sampleSizes)){
-  tempDP = outputs[outputs[, 5] == theTs[dp], ]
-  for (i in 1:length(fittedI)){
-    m = currentFitted[i]
-    tempModel = tempDP[tempDP[, 3] == m, ]
-    tempModel = tempModel[1:noMC, ]
-    if (m == "FreeParm"){
-      NANtemp = length(which(is.nan(tempModel[, 4]),)) + length(which(tempModel[, 4] == "Inf"))
-      convTempStrong = length(which(tempModel[, 52] == "Strong"))
-      convTempNo = length(which(tempModel[, 52] == "No"))
-      convTempWeak = length(which(tempModel[, 52] == "Weak"))
-      invertSymTemp = length(which(tempModel[, 53] == "failedInvertSym"))
-      invertDecTemp = length(which(tempModel[, 54] == "failedDecomp"))
-      noSE = length(which(tempModel$X35 == "."))
-      temp = c(modelName, ICspecTRUE, m, sampleSizes[dp], theTs[dp], NANtemp, convTempStrong,
-               convTempWeak, convTempNo, invertSymTemp, invertDecTemp, noSE)
-      convStats = rbind(convStats,temp)
-    } else {
-      NANtemp = length(which(is.nan(tempModel[, 4]),)) + length(which(tempModel[, 4] == "Inf"))
-      convTempStrong = length(which(tempModel[, 42] == "Strong"))
-      convTempNo = length(which(tempModel[, 42] == "No"))
-      convTempWeak = length(which(tempModel[, 42] == "Weak"))
-      invertSymTemp = length(which(tempModel[, 43] == "failedInvertSym"))
-      invertDecTemp = length(which(tempModel[, 44] == "failedDecomp"))
-      noSE = length(which(tempModel$X25 == "."))
-      temp = c(modelName, ICspecTRUE, m, sampleSizes[dp], theTs[dp], NANtemp, convTempStrong,
-               convTempWeak, convTempNo, invertSymTemp, invertDecTemp, noSE)
-      convStats = rbind(convStats, temp)
-    }
-  } # end fitted model loop
-} # end data points loop
-
-toKeep = NULL
-for (i in 1:length(fittedI)){
-  m = currentFitted[i]
-  tempModel = outputs[outputs[, 3] == m, ]
-  tempModel = tempModel[1:(noMC*2), ]
-  tempModel$rep = c(1:noMC, 1:noMC)
-  if (m == "FreeParm"){
-    toKeep = rbind(toKeep, tempModel[which((tempModel[, 4] != "Inf") & (!is.nan(tempModel[, 4])) & 
-                                             (tempModel[, 52] == "Strong") & (tempModel$X35 != ".") & !is.na(tempModel[, 3]) &
-                                             is.na(tempModel[, 53])), ])
-  } else {
-    toKeep = rbind(toKeep, tempModel[which((tempModel[, 4] != "Inf") & (!is.nan(tempModel[, 4])) &
-                            (tempModel[, 42]=="Strong") & (tempModel$X25 != ".") &                                                
-                                             !is.na(tempModel[, 3]) &
-                                             is.na(tempModel[, 43])), ])
-  }
+# get the number of reps remaining for each condition
+reps_used <- llply(result_list_subsetted
+                   , function(x) ddply(x, .(modelName, ICspecTRUE, ICfitted, N, T), summarize, nreps = length(RMSE)))
+# melt the results based on parameters
+results_melted <- llply(result_list_subsetted, get_melted_results)
+# get the reps within each simulation condition that qualify as outliers for each parameter
+outlier_reps <- llply(results_melted
+                      , function(x) ddply(x, .(modelName, ICspecTRUE, ICfitted, N, T, param_name), summarize
+           , which_outliers = outDET1(estimate)))
+outlier_reps <- outlier_reps[llply(outlier_reps, nrow)>0]
+# total number of outlier reps within each condition
+noutliers <- llply(outlier_reps
+                   , function(x) ddply(x, .(modelName, ICspecTRUE, ICfitted, N, T)
+                                       , summarize, ntotal_outliers = sum(length(unique(which_outliers)))))
+# adding outlier and reps used information  to convergence stats dat
+convergence_dat <- merge(ldply(noutliers), ldply(convergence_stats)
+                         , by = c("modelName", "ICspecTRUE", "ICfitted", "N", "T"), all=T)
+convergence_dat <- merge(convergence_dat, ldply(reps_used)
+                         , by = c("modelName", "ICspecTRUE", "ICfitted", "N", "T"), all=T)
+# getting rid of rows that have NA
+if(any(apply(convergence_dat, 1, function(x) all(is.na(x[5]))))){
+  convergence_dat <- convergence_dat[!apply(convergence_dat, 1, function(x) all(is.na(x[5]))), ]
 }
-if (diffOnly){
-  dKeep = NULL
-  for (i in 1:length(fittedI)){
-    m = currentFitted[i]
-    tempModel = toKeep[toKeep[, 3] == m, ]
-    if (m == "FreeParm"){
-      dKeep = rbind(dKeep, tempModel[which((tempModel[, 4] != "Inf") & (!is.nan(tempModel[, 4])) & 
-                                               (tempModel[, 52] == "Strong") & (tempModel$X35 != ".") & !is.na(tempModel[, 3]) &
-                                               is.na(tempModel[, 53])), ])
-    } else {
-      dKeep = rbind(dKeep, tempModel[which((tempModel[, 4] != "Inf") & (!is.nan(tempModel[, 4])) &
-                                               (tempModel[, 42]=="Strong") & (tempModel$X25 != ".") &
-                                               !is.na(tempModel[, 3]) &
-                                               is.na(tempModel[, 43])), ])
-    }
-  }
-  toKeep <- dKeep
-  allConv = NULL
-  for (dp in 1:length(sampleSizes)){
-    tempDP = toKeep[toKeep[, 5] == theTs[dp], ]
-    tempDiff = tempDP[tempDP[, 3] == "deJong" | tempDP[, 3] == "largeK" | tempDP[, 3] == "EKF", ]
-    allRep <- tempDiff$rep
-    toRemove <- as.numeric(names(which(table(allRep) < 3)))
-    allConvTemp <- tempDiff[-(which(tempDiff$rep %in% toRemove)), ]
-    allConv = rbind(allConv, allConvTemp)
-  }
-  fittedI <- c(4, 5, 6)
-  currentFitted = allICspecTRUE[fittedI]
-  toKeep <- allConv
-} 
-# check to see if any rows of all NAs
-#any(rowSums(is.na(toKeep)) >= ncol(toKeep) - 1)
-#any(rowSums(is.na(tempModel)) >= ncol(tempModel) - 1)
-#which(rowSums(is.na(toKeep)) >= ncol(toKeep) - 1)
+convergence_dat <- convergence_dat[, names(convergence_dat)[!names(convergence_dat) %in% c(".id.x", ".id.y", ".id")]]
+convergence_dat[convergence_dat$ICspecTRUE %in% "deJong", "ICspecTRUE"] <- "diffuse"
+write.csv(convergence_dat, file="data/output/results/convergence_dat.csv", row.names=F)
 
-#dim(tempModel[(tempModel[, 4] != "Inf") & (!is.nan(tempModel[, 4])) &
-#                (tempModel[, 42]=="Strong") & (tempModel$V25 != ".") & !is.na(tempModel[, 3]), ])
+# unique reps for each condition that have AT LEAST one parameter that qualifies as an outlier
+unique_outliers_dat <- ldply(outlier_reps, function(x) unique(x[, c("modelName", "ICspecTRUE", "ICfitted", "N", "T", "which_outliers")]))
+unique_outliers_dat$N <- as.numeric(unique_outliers_dat$N)
+unique_outliers_dat$T <- as.numeric(unique_outliers_dat$T)
+# results with outliers removed
+results_dat_subsetted_outliers_removed <- ldply(result_list_subsetted, function(x) ddply(x, .(modelName, ICspecTRUE, ICfitted, N, T)
+                                                , function(y) remove_outliers(y, unique_outliers_dat)))
 
-#which((tempModel[, 4] != "Inf") & (!is.nan(tempModel[, 4])) &
-#        (tempModel[, 42]=="Strong") & (tempModel$V25 != ".") & !is.na(tempModel[, 3]))
+#convDir = paste(RESULTS_DIR, "/ConvStats_M", modelName, "TIC", ICspecTRUE, small, mod, jDiff,".txt",sep="")
+#write.table(convStats, file=convDir, append=FALSE, col.names = TRUE)
 
-outputs <- toKeep
-outs=NULL
-for (dp in 1:length(sampleSizes)){
-  tempDP = outputs[outputs[, 5] == theTs[dp], ]
-  for (i in 1:length(fittedI)){
-    m = currentFitted[i]
-    tempModel = tempDP[tempDP[, 3] == m, ]
-    if (m == "FreeParm"){
-      popValues = c(popValuesi[[model]],1,.5,1.2,.3,.7)
-    } else {
-      popValues = popValuesi[[model]]
-    }
-    noPars = length(popValues)	
-    if (nrow(tempModel) == 0) next
-    numbsTemp = lapply(tempModel[, c(7:(noPars * 2 + 1 + 6), 4)], as.numeric)
-    numbsTemp = as.data.frame(numbsTemp)
-    if(any(rowSums(is.na(numbsTemp)) >= ncol(numbsTemp)-1)){
-      numbsTemp = numbsTemp[-which(rowSums(is.na(numbsTemp)) >= (ncol(numbsTemp)-1)),]
-    }
-    outsALL=NULL
-    for (oo in 1:noPars){
-      outsT = outDET1(numbsTemp[, oo])
-      outsALL = c(outsALL, outsT)
-    }
-    outU = unique(outsALL)
-    
-    outN = length(outU)
-    outs = rbind(outs, c(modelName, ICspecTRUE, m, sampleSizes[dp], theTs[dp], outN))
-  }
-}
+# melt results again with outliers removed
+results_melted <- melt(results_dat_subsetted_outliers_removed, id.vars = c("modelName", "ICspecTRUE", "ICfitted"
+                                                          , "N", "T", "rep"), measure.vars = PAR_NAMES
+                       , variable.name = "param_name", value.name = "estimate")
+# merge parameter meta data into results
+results_melted_params <- merge(results_melted, pop_values_dat
+                               , by.x = c("param_name", "modelName"), by.y = c("param_name", "model_type"))
+# repeat process for standard error simulation outcomes
+results_melted_ses <- melt(results_dat_subsetted_outliers_removed, id.vars = c("modelName", "ICspecTRUE", "ICfitted"
+                                                                           , "N", "T", "rep"), measure.vars = sprintf("se%s", PAR_NAMES)
+                       , variable.name = "se_param_name", value.name = "se_estimate")
+results_melted_ses$param_name <- gsub("se", "", results_melted_ses$se_param_name)
+# merge everything together
+results_melted_params_ses <- merge(results_melted_params, results_melted_ses
+           , by=c("modelName", "ICspecTRUE", "ICfitted", "N", "T", "param_name", "rep"))
 
-convStats=cbind(convStats, outs[, 6])	
-colnames(convStats) = c("Model", "TrueIC", "ICFit", "np", "nt", "NAN", "StrongConv", 
-                        "WeakConv", "NoConv", "failedInvertSym", "failedDecomp", 
-                        "noSE", "outlier")
-
-convDir = paste(RESULTS_DIR, "/ConvStats_M", modelName, "TIC", ICspecTRUE, small, mod, jDiff,".txt",sep="")
-write.table(convStats, file=convDir, append=FALSE, col.names = TRUE)
-
-sumstatsALL = NULL
-ostatsALL = NULL
-forANOVA = NULL
-AICbest = matrix(NA, noMC*length(sampleSizes), length(fittedI))
-BICbest = matrix(NA, noMC*length(sampleSizes), length(fittedI))
-
-for (dp in 1:length(sampleSizes)){
-  tempDP = outputs[outputs[, 5] == theTs[dp], ]
-  for (i in 1:length(fittedI)){
-    m = currentFitted[i]
-    tempModel = tempDP[tempDP[, 3] == m, ]
-    sumstats = NULL
-    otherstats = NULL
-    if (m == "FreeParm"){
-      popValues = c(popValuesi[[model]],1,.5,1.2,.3,.7)
-      if (model == 2){
-        colnames(tempModel) = c(PFAcolnamesFP, "rep")
-      } else if (model == 1){
-        colnames(tempModel) = c(PFAcolnamesFP, "", "rep")
-      }
-    } else {
-      popValues = popValuesi[[model]]
-      colnames(tempModel) = c(PFAcolnames)
-      colnames(tempModel)[ncol(tempModel)] = "rep"
-    }
-    noPars = length(popValues)
-    if (nrow(tempModel) == 0) next
-    numbsTemp = lapply(tempModel[, c(7:(noPars * 2 + 1 + 6), 4, which(names(tempModel) == "rep"),
-                                     which(names(tempModel) == "LL"),
-                                     which(names(tempModel) == "time"))], as.numeric)
-    numbsTemp = as.data.frame(numbsTemp)
-    if(any(rowSums(is.na(numbsTemp)) >= ncol(numbsTemp)-1)){
-      numbsTemp = numbsTemp[-which(rowSums(is.na(numbsTemp)) >= (ncol(numbsTemp)-1)),]
-    }
-    AICbest[numbsTemp$rep + (dp - 1)*noMC, i] = AIC(numbsTemp$LL, noPars)
-    BICbest[numbsTemp$rep + (dp - 1)*noMC, i] = BIC(numbsTemp$LL, noPars, sampleSizes[dp])
-    
-    #if (!smallpop){
-    #  if (any(numbsTemp$V11 < .001)){
-    #    numbsTemp = numbsTemp[-which((numbsTemp$V11) < .001), ]
-    #  }
-    #  if(any(numbsTemp$V22 < .001)){
-    #    numbsTemp = numbsTemp[-which((numbsTemp$V22)<.001), ]
-    #  }
-    #}
-    outsALL=NULL
-    for (oo in 1:noPars){
-      outs = outDET1(numbsTemp[, oo])
-      outsALL = c(outsALL, outs)
-    }
-    outU = unique(outsALL)
-    if (length(outU) > 0){
-      numbsTemp = numbsTemp[-(outU), ]
-    }
-    if (nrow(numbsTemp) == 0) next
-    for (p in 1:(noPars)){
-      meantemp = Mean(numbsTemp[, p])
-      sdtemp = SD(numbsTemp[, p])
-      meanSE = Mean(numbsTemp[, p + noPars])
-      tempbias = Bias(numbsTemp[, p], popValues[(p)])
-      temprelbias = relBias(numbsTemp[, p], popValues[(p)])
-      tempRMSE = RMSE(numbsTemp[, p], popValues[(p)])
-      
-      cover = matrix(NA,nrow(numbsTemp),1)
-      power = matrix(NA,nrow(numbsTemp),1)
-      #LLi = matrix(NA,nrow(numbsTemp),1)
-      #RMSEAi = matrix(NA,nrow(numbsTemp),1)
-      
-      for (r in 1:nrow(numbsTemp)){
-        if (is.na(numbsTemp[r, 1])) next
-        if (is.na(numbsTemp[r, (p + noPars)])) next
-        templcl = lcl(numbsTemp[r,p],numbsTemp[r, (p + noPars)])
-        tempucl = ucl(numbsTemp[r,p],numbsTemp[r, (p + noPars)])
-        cover[r,1] = cov(templcl, tempucl, popValues[(p)])
-        if (!(numbsTemp[r,p] == 0 & numbsTemp[r, (p + noPars)] == 0)){
-          power[r, 1] = pow(numbsTemp[r, p], numbsTemp[r, (p + noPars)])}
-        else{
-          power[r,1] = NA
-        }
-      } #end r loop
-      
-    percovtemp = Mean(cover[,1])
-    perpowtemp = Mean(power[,1])
-    timetemp= Mean(as.numeric(numbsTemp$time))		
-    sumstats = rbind(sumstats, c(allICspecTRUE[trueI], m, sampleSizes[dp], theTs[dp], 
-                                 popValues[(p)], meantemp, sdtemp, meanSE, tempbias,
-                                temprelbias, tempRMSE, percovtemp, perpowtemp))
-    }#end p loop
-  tempLL = Mean(numbsTemp$LL)
-  tempAIC = Mean(AIC(numbsTemp$LL, noPars))
-  tempBIC = Mean(BIC(numbsTemp$LL, noPars, sampleSizes[dp]))
-  finalN = nrow(numbsTemp)
-  lvscores = Mean(numbsTemp$RMSE)
-  #tempRMSEA = Mean(RMSEAi)
-  otherstats = rbind(otherstats, c(allICspecTRUE[trueI], m, sampleSizes[dp], theTs[dp], 
-                                   tempLL, tempAIC, tempBIC,
-                                   timetemp, finalN, lvscores))
-  sumstatsALL = rbind(sumstatsALL, sumstats)
-  ostatsALL = rbind(ostatsALL, otherstats)
-  }
-}
+summary_params <- ddply(results_melted_params_ses, .(modelName, ICspecTRUE, ICfitted, N, T, param_name), summarize
+                        , true_value = unique(pop_values)
+                        , param_type = unique(param_type)
+                        , param_mean = as.numeric(mean(as.numeric(estimate), na.rm=T))
+                        , param_sd = as.numeric(sd(as.numeric(estimate), na.rm=T))
+                        , se_mean = as.numeric(mean(as.numeric(se_estimate), na.rm=T))
+                        , se_sd = as.numeric(sd(as.numeric(se_estimate), na.rm=T))
+                        , sd_minus_se = as.numeric(sd(as.numeric(estimate), na.rm=T)) - as.numeric(mean(as.numeric(se_estimate), na.rm=T))
+                        , bias = Bias(as.numeric(estimate), unique(pop_values))
+                        , rel_bias = relBias(as.numeric(estimate), unique(pop_values))
+                        , rmse = RMSE(as.numeric(estimate), unique(pop_values))
+                        , coverage = ifelse(any(is.na(as.numeric(estimate))), NA
+                                            , mean(cov(lcl(as.numeric(estimate), as.numeric(se_estimate))
+                                    , ucl(as.numeric(estimate), as.numeric(se_estimate))
+                                    , unique(pop_values))))
+                        , power = ifelse(any(is.na(as.numeric(estimate))), NA
+                                         , mean(pow(as.numeric(estimate), as.numeric(se_estimate))))
+                        )
+summary_params[summary_params$ICspecTRUE %in% "deJong", "ICspecTRUE"] <- "diffuse"
+summary_parmtype <- ddply(summary_params, .(modelName, ICspecTRUE, ICfitted, N, T, param_type), summarize
+                          , bias = mean(bias, na.rm=T)
+                          , rel_bias = mean(rel_bias, na.rm=T)
+                          , rmse = mean(rmse, na.rm=T)
+                          , coverage = mean(coverage, na.rm=T)
+                          , sd_minus_se = mean(sd_minus_se, na.rm=T)
+                          , power = mean(power, na.rm=T)
+                          )
+summary_parmtype[summary_parmtype$ICspecTRUE %in% "deJong", "ICspecTRUE"] <- "diffuse"
+results_dat_subsetted_outliers_removed$AIC <- with(results_dat_subsetted_outliers_removed
+                                                   , AIC(as.numeric(LL), length(which(!is.na(PAR_NAMES)))))
+results_dat_subsetted_outliers_removed$BIC <- with(results_dat_subsetted_outliers_removed
+                                                   , BIC(as.numeric(LL), length(which(!is.na(PAR_NAMES))), N))
+best_info_criterias <- ddply(results_dat_subsetted_outliers_removed, .(modelName, ICspecTRUE, rep), summarize
+      , bestAIC = ICfitted[min(AIC) == AIC]
+      , bestBIC = ICfitted[min(BIC) == BIC])
+summary_best_info_criterias <- ddply(best_info_criterias, .(modelName, ICspecTRUE), function(chunk){
+                                     tmp <- data.frame(apply(chunk[, c("bestAIC", "bestBIC")], 2, table))
+                                     data.frame(bestAIC = tmp$bestAIC, bestBIC = tmp$bestBIC, winning_model = row.names(tmp))
+                                     })
+summary_best_info_criterias[summary_best_info_criterias$ICspecTRUE %in% "deJong", "ICspecTRUE"] <- "diffuse"
+summary_overall <- ddply(results_dat_subsetted_outliers_removed
+                         , .(modelName, ICspecTRUE, ICfitted, N, T)
+                         , summarize
+                         , AIC = mean(as.numeric(AIC), na.rm=T)
+                         , BIC = mean(as.numeric(BIC), na.rm=T)
+                         , finalN = length(RMSE)
+                         , lv_rmse = mean(as.numeric(RMSE), na.rm=T)
+                         , time = mean(as.numeric(time), na.rm=T))
+summary_overall[summary_overall$ICspecTRUE %in% "deJong", "ICspecTRUE"] <- "diffuse"
 
 
-allAIC = NULL
-allBIC = NULL
-for (dp in 1:length(sampleSizes)){
-  AICbest1=NULL
-  BICbest1=NULL
-  tempAIC = AICbest[(1 + ((dp-1)*noMC)):(noMC*dp), ] 
-  tempBIC = BICbest[(1 + ((dp-1)*noMC)):(noMC*dp), ] 
-  for(i in 1:noMC){
-    baic = min(tempAIC[i,], na.rm=T)
-    num = which(tempAIC[i,] == baic)
-    #num1=fittedI[num]
-    AICbest1 = cbind(AICbest1, num)
-    
-    bbic = min(tempBIC[i,], na.rm=T)
-    num = which(tempBIC[i,] == bbic)
-    BICbest1 = cbind(BICbest1, num)
-  }
-  tableAICbest=NULL
-  tableBICbest=NULL
-  for (m in 1:length(fittedI)){
-    mm=fittedI[m]
-    label=allICspecTRUE[mm]
-    numA=length(which(AICbest1==m))
-    tempA=c(modelName,ICspecTRUE,label,numA)
-    numB=length(which(BICbest1==m))
-    tempB=c(modelName,ICspecTRUE,label,numB)
-    tableAICbest=rbind(tableAICbest,tempA)
-    tableBICbest=rbind(tableBICbest,tempB)
-  }
-  allAIC = rbind(allAIC, tableAICbest)
-  allBIC = rbind(allBIC, tableBICbest)
-}
-
-
-fileAIC=paste(RESULTS_DIR,"/AICbest",modelName,allICspecTRUE[trueI],small,mod,jDiff,".dat",sep="")
-write(t(allAIC),file=fileAIC,ncolumns=ncol(allAIC))
-
-fileBIC=paste(RESULTS_DIR,"/BICbest",modelName,allICspecTRUE[trueI],small,mod,jDiff,".dat",sep="")
-write(t(allBIC),file=fileBIC,ncolumns=ncol(allBIC))
-
+t <- results_melted[results_melted$ICfitted %in% "FreeParm" & results_melted$T == 50 & 
+                      results_melted$param_name %in% "Z21", ]
+x <- results_dat_subsetted[results_dat_subsetted$ICfitted %in% "FreeParm" & results_dat_subsetted$T == 50, ]
 # plots
 
 library(ggplot2)
@@ -486,12 +298,12 @@ sePlotAgg <- ggplot(allAgg, aes(FittedIC, SEDiff)) +
 
 models <- c("STAT", "NONstat")
 
-pdf(paste(RESULTS_DIR, "/Plot_M", models[model], "_TI", allICspecTRUE[trueI], mod, jDiff,".pdf", sep = ""),
+pdf(paste(RESULTS_DIR, "/Plot_M", models[model], "_TI", IC_SPECS[trueI], mod, jDiff,".pdf", sep = ""),
     width=10, height=8)
 grid.arrange(biasPlotAgg, ciPlotAgg, sePlotAgg, ncol = 3)
 dev.off()
 
-pdf(paste(RESULTS_DIR, "/Plot_NoSE_M", models[model], "_TI", allICspecTRUE[trueI], mod, jDiff,".pdf", sep = ""),
+pdf(paste(RESULTS_DIR, "/Plot_NoSE_M", models[model], "_TI", IC_SPECS[trueI], mod, jDiff,".pdf", sep = ""),
     width=7, height=8)
 grid.arrange(biasPlotAgg, ciPlotAgg, ncol = 2)
 dev.off()
@@ -520,7 +332,7 @@ sePlotAgg <- ggplot(noNull, aes(FittedIC, SEDiff)) +
         text = element_text(size = 16), plot.title = element_text(size = 16),
         strip.text.x = element_text(size=11), legend.position = "none", axis.title.y = element_blank())
 
-pdf(paste(RESULTS_DIR, "/Plot_NONULL_M", models[model], "_TI", allICspecTRUE[trueI], mod, jDiff,".pdf", sep = ""),
+pdf(paste(RESULTS_DIR, "/Plot_NONULL_M", models[model], "_TI", IC_SPECS[trueI], mod, jDiff,".pdf", sep = ""),
     width=10, height=8)
 grid.arrange(biasPlotAgg, ciPlotAgg, sePlotAgg, ncol = 3)
 dev.off()
