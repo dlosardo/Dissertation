@@ -13,3 +13,91 @@ compared to even other severe misspecifications - like assuming null. not estima
 ask lu to check if gtran part for LDL is implemented correctly.
 
 double check to see free parm conv noSE 
+
+mild nonstationarity (.5, .1, .5)
+moderate nonstationarity (1, .4, 1)
+
+
+On 6/26/13:
+From Sy-Miin:
+Hi Diane:
+
+So it looks like the 50/20 conditions still have a lot of NaNs. I think
+the process noise variances are still too large when T = 50.
+
+I am restarting the simulation with your "mildly non-stationary" process
+noise variance/covariance values, but only with T=50, N = 20.
+
+Basically the merit of your poster is showing what happens with the
+different IC specifications in the "structural equation modeling
+framework" when one has panel data with small T. You should emphasize
+results from the 5/200 conditions. Everything in the 50/20 conditions
+should only be mentioned in passing--as a verification of what we already
+knew from the state-space literature.
+
+So when you discuss the non-stationary conditions, focus on the 5/200
+conditions, with true values for the process noise covariance matrix being
+[.5, .1; .1, .5]. I don't think it is reasonable to set them any smaller
+for the panel data condition. For the 50/20 conditions, just mention in
+passing that you have to reduce the process noise covariance matrix to
+[.05, .02; .02, .05] so the process doesn't explode into excessively large
+values. Then just discuss the results briefly--point out any discrepancies
+compared to the 5/200 conditions with larger process noise covariance
+matrix. You shouldn't compare the RMSEs of the point estimates and SE
+estimates to those from the 5/200 conditions because your process noise
+covariance matrix is of different values. But what you should compare are
+differences in conclusions with regard to whether some approaches work
+better/worse with some trueIC than others.
+
+All plots, tables, etc., should focus on the 5/200 conditions. If the
+simulations for the 50/20 conditions still aren't done by the time we talk
+tonight, don't worry. Just go ahead and fill in the results for the 5/200
+conditions.
+
+If you want to compare properties of the point/SE estimates in the 50/20
+vs. the 5/200 conditions, just focus on the stationary model.
+
+Then just aim to fill in the final 50/20 bits and pieces and finalize
+everything this weekend.
+From Diane:
+Hi Sy-Miin,
+
+I have uploaded the results in the form of plots and tables and the draft
+of the poster into the simresults folder in the PC folder. I used the
+previous simulation results from yesterday. As you said, the main focus is
+on the panel data case. The free parameter condition appears to do quite
+well. We can discuss more later.
+
+6/22/13:
+From Sy-Miin:
+Lu, can you help run the simulation with trueI = 3 (across all sample size configurations and across all fittedI conditions)? It took my computer almost one whole day to run the conditions for trueI = 2 and I am now starting trueI = 4.
+ 
+You don’t need the kinship library so you could run the simulations on your computer just fine. That way the simulations may finish running in time for Diane to do something with them tomorrow.
+ 
+Just remember to change the file name below so it has trueI3 in the name.
+ 
+fileTempResults=paste(outputDiri,"/simResults/Model2trueI4tempresults.dat",sep="")
+ 
+Thanks.
+
+6/21/13:
+From Sy-Miin:
+Thank you all.
+
+Just started the simulations now. Diane, you can find the results files in simResults/Model2trueIXtempresults.dat.
+
+It looks from the code that I can only run one trueI at a time so the the X above stands for the condition for trueI. 
+
+6/20/13:
+From Sy-Miin:
+Okay, the simulation is still running but the results thus far look promising. There is an Excel file in PCRUN/simResults with labels applied so you guys can take a quick look if you want.
+
+Quick question: are we currently imposing the [-3, 3] constraint on the T11-T22 parameters for some conditions but not others? If so, maybe we need to remove it (if it doesn't make a difference) or impose it in all the non-stationary conditions. Lu, can you comment on this?
+
+Overall, strong convergence across the board. I will keep running the simulations. At the rate that it is running, I think the results should be ready by this weekend--which means, we are exactly on track on getting the poster completed by July 1. Isn't that amazing?
+
+From Lu:
+We are only imposing [-3,3] constraint on T matrix for dejong condition. It of course helps in the dejong condition.
+I put the new compileoxcodes for imposing constraints on all conditions (compileoxcodeall3)as well as on neither condition(compileoxcodeno3). You just need to change the source line before the batch line in mainOX.
+Thanks,
+Lu

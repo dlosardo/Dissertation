@@ -1,0 +1,106 @@
+DianeDissertation -> PCRUN -> SimResults
+	Model2trueI2tempresults.dat
+	Model2trueI3tempresults.dat
+	Model2trueI4tempresults.dat
+
+	Model2MildtrueI2tempresults.dat
+	Model2MildtrueI3tempresults.dat
+	Model2MildtrueI4tempresults.dat
+
+	Model2ModeratetrueI4tempresults.dat
+
+Where:
+ Model2 = Nonstationary Model
+ trueI2 = Free Parameter Initial Condition Specification
+ trueI3 = Null Initial Condition Specification
+ trueI4 = Diffuse Initial Condition Specification
+
+moderate nonstationarity uses pop values in Process Noise Covariance Matrix: (1, .4, 1)
+mild nonstationarity uses pop values in Process Noise Covariance Matrix: (.5, .1, .5) or (.05, .02, .05)?
+
+Did we do this for all conditions? - "For the 50/20 conditions, just mention in
+passing that you have to reduce the process noise covariance matrix to
+[.05, .02; .02, .05] so the process doesn't explode into excessively large
+values."
+
+Model2trueI2tempresults.dat
+   modelName ICspecTRUE  ICfitted   N  T num_reps
+1    PFAnons   Diffuse     deJong 200  5      1
+2    PFAnons   Diffuse        EKF 200  5      1
+3    PFAnons   Diffuse   FreeParm 200  5      1
+4    PFAnons   Diffuse     largeK 200  5      1
+5    PFAnons   Diffuse       Null 200  5      1
+6    PFAnons   FreeParm   deJong  20 50      500
+7    PFAnons   FreeParm   deJong 200  5      500
+8    PFAnons   FreeParm      EKF  20 50      500
+9    PFAnons   FreeParm      EKF 200  5      500
+10   PFAnons   FreeParm FreeParm  20 50      500
+11   PFAnons   FreeParm FreeParm 200  5      500
+12   PFAnons   FreeParm   largeK  20 50      500
+13   PFAnons   FreeParm   largeK 200  5      500
+14   PFAnons   FreeParm     Null  20 50      500
+15   PFAnons   FreeParm     Null 200  5      500
+
+
+Model2trueI3tempresults.dat
+   modelName ICspecTRUE ICfitted   N  T num_reps
+1    PFAnons       Null   deJong  20 50      379
+2    PFAnons       Null   deJong 200  5      500
+3    PFAnons       Null      EKF  20 50      379
+4    PFAnons       Null      EKF 200  5      500
+5    PFAnons       Null FreeParm  20 50      380
+6    PFAnons       Null FreeParm 200  5      500
+7    PFAnons       Null   largeK  20 50      379
+8    PFAnons       Null   largeK 200  5      500
+9    PFAnons       Null     Null  20 50      380
+10   PFAnons       Null     Null 200  5      500
+
+Model2trueI4tempresults.dat
+   modelName ICspecTRUE  ICfitted   N  T num_reps
+1    PFAnons     Diffuse   deJong  20 50      620
+2    PFAnons     Diffuse   deJong 200  5      500
+3    PFAnons     Diffuse      EKF  20 50      620
+4    PFAnons     Diffuse      EKF 200  5      500
+5    PFAnons     Diffuse FreeParm  20 50      620
+6    PFAnons     Diffuse FreeParm 200  5      500
+7    PFAnons     Diffuse   largeK  20 50      620
+8    PFAnons     Diffuse   largeK 200  5      500
+9    PFAnons     Diffuse     Null  20 50      620
+10   PFAnons     Diffuse     Null 200  5      500
+
+
+Model2MildtrueI2tempresults.dat
+  modelName ICspecTRUE ICfitted  N  T num_reps
+1   PFAnons   FreeParm   deJong 20 50      500
+2   PFAnons   FreeParm      EKF 20 50      500
+3   PFAnons   FreeParm FreeParm 20 50      500
+4   PFAnons   FreeParm   largeK 20 50      500
+5   PFAnons   FreeParm     Null 20 50      500
+
+
+Model2MildtrueI3tempresults.dat
+  modelName ICspecTRUE ICfitted  N  T num_reps
+1   PFAnons       Null   deJong 20 50      500
+2   PFAnons       Null      EKF 20 50      500
+3   PFAnons       Null FreeParm 20 50      500
+4   PFAnons       Null   largeK 20 50      500
+5   PFAnons       Null     Null 20 50      500
+
+
+Model2MildtrueI4tempresults.dat
+  modelName ICspecTRUE ICfitted  N  T num_reps
+1   PFAnons     Diffuse   deJong 20 50      500
+2   PFAnons     Diffuse      EKF 20 50      500
+3   PFAnons     Diffuse FreeParm 20 50      500
+4   PFAnons     Diffuse   largeK 20 50      500
+5   PFAnons     Diffuse     Null 20 50      500
+
+
+Model2ModeratetrueI4tempresults.dat
+  modelName ICspecTRUE ICfitted   N T num_reps
+1   PFAnons     Diffuse   deJong 200 5      500
+2   PFAnons     Diffuse      EKF 200 5      500
+3   PFAnons     Diffuse FreeParm 200 5      500
+4   PFAnons     Diffuse   largeK 200 5      500
+5   PFAnons     Diffuse     Null 200 5      500
+

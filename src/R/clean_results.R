@@ -100,6 +100,18 @@ add_reps <- function(x){
   x$rep <- 1:nrow(x)
   return(x)
 }
+#data/output/results
+#TRUE_ICS <- c("ModelImplied", "FreeParm", "Null", "deJong", "FreeParm", "Null")
+#tmp <- read.table(file = "~/Downloads/Model2ModeratetrueI4tempresults.dat"
+#           , stringsAsFactors = FALSE, fill = TRUE)
+#dim(tmp)
+#table(tmp$V2)
+
+#tmp <- name_results(tmp[, -ncol(tmp)], PFA_COLNAMES, PFA_COLNAMESFP)
+#tmp <- name_results(tmp, PFA_COLNAMES, PFA_COLNAMESFP)
+
+#ddply(tmp, .(modelName, ICspecTRUE, ICfitted, N, T), summarize, num_reps = length(ICfitted))
+#ldply(result_list, function(x) ddply(x, .(modelName, ICspecTRUE, ICfitted, N, T), summarize, num_reps = length(ICfitted)))
 #' Read in results in the form of a list
 get_result_list <- function(model_names, true_ics, no_mc, pfa_colnames, pfa_colnames_fp){
   # read in sim results
