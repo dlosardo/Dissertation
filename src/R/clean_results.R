@@ -30,12 +30,12 @@ PARAM_TYPE=c(rep("measurement", 4), rep("process_noise", 3), rep("time_series", 
 POP_VALUES_FREEPARM_EXTRAS <- c(1,.5,1.2,.3,.7)
 POP_VALUES_STAT <- c(1.2,.8,.9,1.1,1,.4,1,.5,-.3,-.1,.6,.8,.6,2,1,1.5,.4, POP_VALUES_FREEPARM_EXTRAS)
 POP_VALUES_NONSTAT <- c(1.2,.8,.9,1.1,.5,.1,.5,1.2,-.4,.6,.7,.8,.6,2,1,1.5,.4, POP_VALUES_FREEPARM_EXTRAS)
-MODEL_NAMES <- c("PFAstat", "PFAnons")
+MODEL_TYPES <- c("PFAstat", "PFAnons")
 # create a population values dataframe that contains the following info
-POP_VALUES_DAT <- data.frame(param_name = rep(PAR_NAMES, length(MODEL_NAMES))
-                             , model_type = do.call("c", sapply(MODEL_NAMES, function(x) rep(x, length(PAR_NAMES)), simplify=F))
+POP_VALUES_DAT <- data.frame(param_name = rep(PAR_NAMES, length(MODEL_TYPES))
+                             , model_type = do.call("c", sapply(MODEL_TYPES, function(x) rep(x, length(PAR_NAMES)), simplify=F))
                              , pop_values = c(POP_VALUES_STAT, POP_VALUES_NONSTAT)
-                             , param_type = rep(PARAM_TYPE, length(MODEL_NAMES)))
+                             , param_type = rep(PARAM_TYPE, length(MODEL_TYPES)))
 
 MODEL_NAMES <- c(rep("PFAstat", 3), rep("PFAnons", 3))
 TRUE_ICS <- c("ModelImplied", "FreeParm", "Null", "deJong", "FreeParm", "Null")
@@ -236,24 +236,32 @@ main <- function(model_names, true_ics, no_mc, pop_values_dat, pfa_colnames, pfa
                                             , which_outliers = outDET1(estimate)))
   outlier_reps <- outlier_reps[llply(outlier_reps, nrow)>0]
   # total number of outlier reps within each condition
-  noutliers <- llply(outlier_reps
-                     , function(x) ddply(x, .(modelName, ICspecTRUE, ICfitted, N, T)
-                                         , summarize, ntotal_outliers = sum(length(unique(which_outliers)))))
+  noutliers <- llply(outlier_reps, function(x) ddply(x, .(modelName, ICspecTRUE, ICfitted, N, T)
+                        , summarize, ntotal_outliers = sum(length(unique(which_outliers)))))
   # update convergence stats with outlier and reps used info
   convergence_dat <- update_convergence_stats(convergence_stats, noutliers, reps_used)
-
+  
+  # removing outliers
   results_dat_subsetted_outliers_removed <- remove_all_outliers(outlier_reps, result_list_subsetted)
+  # renaming the True diffuse IC from 'deJong' to 'diffuse' (not sure why I called it that in the first place)
   results_dat_subsetted_outliers_removed[results_dat_subsetted_outliers_removed$ICspecTRUE %in% "deJong", "ICspecTRUE"] <- "diffuse"
   
   # obtaining a dataframe of simulation outcomes for parameters
   summary_params <- get_param_summary(results_dat_subsetted_outliers_removed, param_names, pop_values_dat)
+  
   # obtaining a dataframe of simulation outcomes aggregated by parameter type
   summary_paramtype <- get_paramtype_summary(summary_params)
+  
+  # calculating AIC and BIC
   results_dat_subsetted_outliers_removed$AIC <- with(results_dat_subsetted_outliers_removed
                                                      , AIC(as.numeric(LL), length(which(!is.na(param_names)))))
   results_dat_subsetted_outliers_removed$BIC <- with(results_dat_subsetted_outliers_removed
                                                      , BIC(as.numeric(LL), length(which(!is.na(param_names))), N))
+  # getting the fitted models with the best AIC and BIC
   summary_best_info_criterias <- get_summary_best_info_criterias(results_dat_subsetted_outliers_removed)
+  
+  # getting an overall summary which includes RMSE of factor scores, AIC and BIC means, average time spent running models,
+  #   and the final number of replications after outliers are removed
   summary_overall <- get_overall_summary(results_dat_subsetted_outliers_removed)
 
   # write out convergence dat
