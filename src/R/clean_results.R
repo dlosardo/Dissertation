@@ -30,13 +30,14 @@ PARAM_TYPE=c(rep("measurement", 4), rep("process_noise", 3), rep("time_series", 
 POP_VALUES_FREEPARM_EXTRAS <- c(1,.5,1.2,.3,.7)
 POP_VALUES_STAT <- c(1.2,.8,.9,1.1,1,.4,1,.5,-.3,-.1,.6,.8,.6,2,1,1.5,.4, POP_VALUES_FREEPARM_EXTRAS)
 POP_VALUES_NONSTAT <- c(1.2,.8,.9,1.1,.5,.1,.5,1.2,-.4,.6,.7,.8,.6,2,1,1.5,.4, POP_VALUES_FREEPARM_EXTRAS)
+POP_VALUES_NONSTAT_MILD <- c(1.2,.8,.9,1.1,1,.4,1,.5,-.3,-.1,.6,.8,.6,2,1,1.5,.4, POP_VALUES_FREEPARM_EXTRAS)
+POP_VALUES_NONSTAT_MODERATE <- c(1.2,.8,.9,1.1,1,.4,1,.5,-.3,-.1,.6,.8,.6,2,1,1.5,.4, POP_VALUES_FREEPARM_EXTRAS)
 MODEL_TYPES <- c("PFAstat", "PFAnons")
 # create a population values dataframe that contains the following info
 POP_VALUES_DAT <- data.frame(param_name = rep(PAR_NAMES, length(MODEL_TYPES))
                              , model_type = do.call("c", sapply(MODEL_TYPES, function(x) rep(x, length(PAR_NAMES)), simplify=F))
                              , pop_values = c(POP_VALUES_STAT, POP_VALUES_NONSTAT)
                              , param_type = rep(PARAM_TYPE, length(MODEL_TYPES)))
-
 MODEL_NAMES <- c(rep("PFAstat", 3), rep("PFAnons", 3))
 TRUE_ICS <- c("ModelImplied", "FreeParm", "Null", "deJong", "FreeParm", "Null")
 FITTED_ICS <- c("ModelImplied","FreeParm","Null","deJong","EKF","largeK")
@@ -113,10 +114,10 @@ add_reps <- function(x){
 #ddply(tmp, .(modelName, ICspecTRUE, ICfitted, N, T), summarize, num_reps = length(ICfitted))
 #ldply(result_list, function(x) ddply(x, .(modelName, ICspecTRUE, ICfitted, N, T), summarize, num_reps = length(ICfitted)))
 #' Read in results in the form of a list
-get_result_list <- function(model_names, true_ics, no_mc, pfa_colnames, pfa_colnames_fp){
+get_result_list <- function(model_names, true_ics, no_mc, pfa_colnames, pfa_colnames_fp, results_dir){
   # read in sim results
   result_list <- mapply(function(model_name, true_ic){
-    list(read.table(file = sprintf("data/output/results/M%sICT_%sICF_ALL.dat", model_name, true_ic)
+    list(read.table(file = sprintf(paste0(results_dir, "/M%sICT_%sICF_ALL.dat"), model_name, true_ic)
                     , stringsAsFactors = FALSE, fill = TRUE))
   }, model_names, true_ics)
   # name sim results
@@ -157,13 +158,22 @@ get_param_summary <- function(results_dat, param_names, pop_values_dat){
   results_melted <- melt(results_dat, id.vars = c("modelName", "ICspecTRUE", "ICfitted"
                                                   , "N", "T", "rep"), measure.vars = param_names
                          , variable.name = "param_name", value.name = "estimate")
+  if(any(is.na(results_melted$estimate))){
+    results_melted <- results_melted[!is.na(results_melted$estimate), ]
+  }
   # merge parameter meta data into results
   results_melted_params <- merge(results_melted, pop_values_dat
                                  , by.x = c("param_name", "modelName"), by.y = c("param_name", "model_type"))
+  if(any(is.na(results_melted_params$estimate))){
+    results_melted_params <- results_melted_params[!is.na(results_melted_params$estimate), ]
+  }
   # repeat process for standard error simulation outcomes
   results_melted_ses <- melt(results_dat, id.vars = c("modelName", "ICspecTRUE", "ICfitted"
                                                       , "N", "T", "rep"), measure.vars = sprintf("se%s", param_names)
                              , variable.name = "se_param_name", value.name = "se_estimate")
+  if(any(is.na(results_melted_ses$se_estimate))){
+    results_melted_ses <- results_melted_ses[!is.na(results_melted_ses$se_estimate), ]
+  }
   results_melted_ses$param_name <- gsub("se", "", results_melted_ses$se_param_name)
   # merge everything together
   results_melted_params_ses <- merge(results_melted_params, results_melted_ses
@@ -218,9 +228,12 @@ get_overall_summary <- function(results_dat){
         , lv_rmse = mean(as.numeric(RMSE), na.rm=T)
         , time = mean(as.numeric(time), na.rm=T))
 }
-main <- function(model_names, true_ics, no_mc, pop_values_dat, pfa_colnames, pfa_colnames_fp, param_names){
+main <- function(model_names, true_ics, no_mc, pop_values_dat, pfa_colnames, pfa_colnames_fp, param_names, results_dir){
   # read in results
-  result_list <- get_result_list(model_names, true_ics, no_mc, pfa_colnames, pfa_colnames_fp)
+  #model_names <- c(rep("PFAnons", 3), rep("PFAnonsMild", 3), "PFAnonsModerate")
+  #true_ics <- c("deJong", "FreeParm", "Null", "deJong", "FreeParm", "Null", "deJong")
+  
+  result_list <- get_result_list(model_names, true_ics, no_mc, pfa_colnames, pfa_colnames_fp, results_dir)
   # obtain convergence statistics
   convergence_stats <- llply(result_list, get_convergence_stats)
   # subset to only results that converged properly
@@ -265,15 +278,15 @@ main <- function(model_names, true_ics, no_mc, pop_values_dat, pfa_colnames, pfa
   summary_overall <- get_overall_summary(results_dat_subsetted_outliers_removed)
 
   # write out convergence dat
-  write.csv(convergence_dat, file="data/output/results/convergence_dat.csv", row.names=F)
+  write.csv(convergence_dat, file=paste0(results_dir, "/convergence_dat.csv"), row.names=F)
   # write out summary_params dat
-  write.csv(summary_params, file="data/output/results/summary_params_dat.csv", row.names=F)
+  write.csv(summary_params, file=paste0(results_dir, "/summary_params_dat.csv"), row.names=F)
   # write out summary_paramtype dat
-  write.csv(summary_paramtype, file="data/output/results/summary_paramtype_dat.csv", row.names=F)
+  write.csv(summary_paramtype, file=paste0(results_dir, "/summary_paramtype_dat.csv"), row.names=F)
   # write out summary_best_info_criterias dat
-  write.csv(summary_best_info_criterias, file="data/output/results/summary_best_info_criterias_dat.csv", row.names=F)
+  write.csv(summary_best_info_criterias, file=paste0(results_dir, "/summary_best_info_criterias_dat.csv") row.names=F)
   # write out summary overall dat
-  write.csv(summary_overall, file="data/output/results/summary_overall_dat.csv", row.names=F)
+  write.csv(summary_overall, file=paste0(results_dir, "/summary_overall_dat.csv"), row.names=F)
 }
-
-main(MODEL_NAMES, TRUE_ICS, NO_MC, POP_VALUES_DAT, PFA_COLNAMES, PFA_COLNAMESFP, PAR_NAMES)
+RESULTS_DIR <- "data/symiin"
+main(MODEL_NAMES, TRUE_ICS, NO_MC, POP_VALUES_DAT, PFA_COLNAMES, PFA_COLNAMESFP, PAR_NAMES, RESULTS_DIR)

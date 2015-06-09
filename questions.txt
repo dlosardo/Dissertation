@@ -15,8 +15,9 @@ Where:
  trueI3 = Null Initial Condition Specification
  trueI4 = Diffuse Initial Condition Specification
 
-moderate nonstationarity uses pop values in Process Noise Covariance Matrix: (1, .4, 1)
-mild nonstationarity uses pop values in Process Noise Covariance Matrix: (.5, .1, .5) or (.05, .02, .05)?
+moderate nonstationarity uses pop values in Process Noise Covariance Matrix: (1, .4, 1) (confirmed)
+mild nonstationarity uses pop values in Process Noise Covariance Matrix: (.05, .02, .05) (confirmed)
+ones without moderate OR mild: (.5, .1, .5)
 
 Did we do this for all conditions? - "For the 50/20 conditions, just mention in
 passing that you have to reduce the process noise covariance matrix to

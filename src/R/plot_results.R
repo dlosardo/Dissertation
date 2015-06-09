@@ -78,6 +78,8 @@ main <- function(convergence_dat_file, summary_params_file, summary_paramtype_fi
                                                    , .(stationarity, ICspecTRUE)
                                                    , function(x) print(plot_simulation_outcomes(x, "param_name", sim_outcome))))
   dev.off()
+  
+  
 }
   
 CONVERGENCE_DAT_FILE = "data/output/results/convergence_dat.csv"
