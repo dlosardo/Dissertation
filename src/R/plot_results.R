@@ -76,12 +76,12 @@ main <- function(convergence_dat_file, summary_params_file, summary_paramtype_fi
   #                         , "param_name", "Bias")
 
   sim_outcomes <- c("Bias", "`Relative Bias`", "RMSE", "Coverage", "`SD MINUS SE`", "Power")
-  pdf("data/output/results/sim_outcomes_paramtype.pdf")
+  pdf("data/symiin/sim_outcomes_paramtype.pdf")
   sapply(sim_outcomes, function(sim_outcome) d_ply(summary_paramtype_forplots
                                                    , .(stationarity, ICspecTRUE)
                                                    , function(x) print(plot_simulation_outcomes(x, "param_type", sim_outcome))))
   dev.off()
-  pdf("data/output/results/sim_outcomes_params.pdf")
+  pdf("data/symiin/sim_outcomes_params.pdf")
   sapply(sim_outcomes, function(sim_outcome) d_ply(summary_params_forplots
                                                    , .(stationarity, ICspecTRUE)
                                                    , function(x) print(plot_simulation_outcomes(x, "param_name", sim_outcome))))
