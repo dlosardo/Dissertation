@@ -28,30 +28,38 @@ PAR_NAMES=c("Z21","Z31","Z52","Z62","V11","V21","V22","T11","T21","T12","T22","U
             "X01","X02","P011","P012","P022")
 PARAM_TYPE=c(rep("measurement", 4), rep("process_noise", 3), rep("time_series", 4), rep("measurement", 6), rep("init_cond", 5))
 POP_VALUES_FREEPARM_EXTRAS <- c(1,.5,1.2,.3,.7)
-POP_VALUES_STAT <- c(1.2,.8,.9,1.1,1,.4,1,.5,-.3,-.1,.6,.8,.6,2,1,1.5,.4, POP_VALUES_FREEPARM_EXTRAS)
-POP_VALUES_NONSTAT <- c(1.2,.8,.9,1.1,.5,.1,.5,1.2,-.4,.6,.7,.8,.6,2,1,1.5,.4, POP_VALUES_FREEPARM_EXTRAS)
-POP_VALUES_NONSTAT_MILD <- c(1.2,.8,.9,1.1,1,.4,1,.5,-.3,-.1,.6,.8,.6,2,1,1.5,.4, POP_VALUES_FREEPARM_EXTRAS)
-POP_VALUES_NONSTAT_MODERATE <- c(1.2,.8,.9,1.1,1,.4,1,.5,-.3,-.1,.6,.8,.6,2,1,1.5,.4, POP_VALUES_FREEPARM_EXTRAS)
-MODEL_TYPES <- c("PFAstat", "PFAnons")
+FACTOR_LOADINGS <- c(1.2,.8,.9,1.1)
+PROCESS_NOISE_COVS <- c(.5,.1,.5)
+PROCESS_NOISE_COVS_MODERATE <- c(1,.4,1)
+PROCESS_NOISE_COVS_MILD <- c(.05,.02,.05)
+TRANSITION_MATRIX_STAT <- c(.5,-.3,-.1,.6)
+TRANSITION_MATRIX_NONS <- c(1.2,-.4,.6,.7)
+MEASUREMENT_ERROR_COVS <- c(.8,.6,2,1,1.5,.4)
+POP_VALUES_STAT <- c(FACTOR_LOADINGS,PROCESS_NOISE_COVS_MODERATE,TRANSITION_MATRIX_STAT,MEASUREMENT_ERROR_COVS, POP_VALUES_FREEPARM_EXTRAS)
+POP_VALUES_NONSTAT <- c(FACTOR_LOADINGS,PROCESS_NOISE_COVS,TRANSITION_MATRIX_NONS,MEASUREMENT_ERROR_COVS, POP_VALUES_FREEPARM_EXTRAS)
+POP_VALUES_NONSTAT_MILD <- c(FACTOR_LOADINGS,PROCESS_NOISE_COVS_MILD,TRANSITION_MATRIX_NONS,MEASUREMENT_ERROR_COVS, POP_VALUES_FREEPARM_EXTRAS)
+POP_VALUES_NONSTAT_MODERATE <- c(FACTOR_LOADINGS,PROCESS_NOISE_COVS_MODERATE,TRANSITION_MATRIX_NONS,MEASUREMENT_ERROR_COVS, POP_VALUES_FREEPARM_EXTRAS)
+MODEL_TYPES <- c("PFAstat", "PFAnons", "PFAnonsMild", "PFAnonsModerate")
 # create a population values dataframe that contains the following info
 POP_VALUES_DAT <- data.frame(param_name = rep(PAR_NAMES, length(MODEL_TYPES))
                              , model_type = do.call("c", sapply(MODEL_TYPES, function(x) rep(x, length(PAR_NAMES)), simplify=F))
-                             , pop_values = c(POP_VALUES_STAT, POP_VALUES_NONSTAT)
+                             , pop_values = c(POP_VALUES_STAT, POP_VALUES_NONSTAT, POP_VALUES_NONSTAT_MILD, POP_VALUES_NONSTAT_MODERATE)
                              , param_type = rep(PARAM_TYPE, length(MODEL_TYPES)))
-MODEL_NAMES <- c(rep("PFAstat", 3), rep("PFAnons", 3))
-TRUE_ICS <- c("ModelImplied", "FreeParm", "Null", "deJong", "FreeParm", "Null")
+MODEL_NAMES <- c(rep("PFAstat", 3), rep("PFAnons", 3), rep("PFAnonsMild", 3), "PFAnonsModerate")
+TRUE_ICS <- c("ModelImplied", "FreeParm", "Null", "deJong", "FreeParm", "Null", "deJong", "FreeParm", "Null", "deJong")
 FITTED_ICS <- c("ModelImplied","FreeParm","Null","deJong","EKF","largeK")
 #############
 # FUNCTIONS #
 #############
 #' Names the results - the tricky part is that the free parameter fitted condition has
 #'  more parameters (the ones in the initial condition specification)
-name_results <- function(results_dat, pfa_colnames, pfa_colnames_fp){
+name_results <- function(results_dat, pfa_colnames, pfa_colnames_fp, model_name){
   free_parm_fitted <- results_dat[results_dat$V3 %in% "FreeParm", ]
   names(free_parm_fitted) <- pfa_colnames_fp
   other_fitted <- results_dat[!results_dat$V3 %in% "FreeParm", 1:length(pfa_colnames)]
   names(other_fitted) <- pfa_colnames
   all_results <- rbind.fill(free_parm_fitted, other_fitted)
+  all_results$modelName <- rep(model_name, nrow(all_results))
   return(all_results)
 }
 #' Reduce dataframe to only those replications with properly converged results
@@ -121,7 +129,9 @@ get_result_list <- function(model_names, true_ics, no_mc, pfa_colnames, pfa_coln
                     , stringsAsFactors = FALSE, fill = TRUE))
   }, model_names, true_ics)
   # name sim results
-  result_list <- llply(result_list, function(x) name_results(x, pfa_colnames, pfa_colnames_fp))
+  result_list <- mapply(function(result_dat, model_name) list(name_results(result_dat, pfa_colnames, pfa_colnames_fp, model_name))
+         , result_list, names(result_list))
+  #result_list <- llply(result_list, function(x) name_results(x, pfa_colnames, pfa_colnames_fp, names(x)))
   # subsetting results so there are NO_MC reps for every simulation condition
   result_list <- llply(result_list
                        , function(x) ddply(x, .(modelName, ICspecTRUE, ICfitted, N, T), function(y) y[1:no_mc, ]))
@@ -284,9 +294,22 @@ main <- function(model_names, true_ics, no_mc, pop_values_dat, pfa_colnames, pfa
   # write out summary_paramtype dat
   write.csv(summary_paramtype, file=paste0(results_dir, "/summary_paramtype_dat.csv"), row.names=F)
   # write out summary_best_info_criterias dat
-  write.csv(summary_best_info_criterias, file=paste0(results_dir, "/summary_best_info_criterias_dat.csv") row.names=F)
+  write.csv(summary_best_info_criterias, file=paste0(results_dir, "/summary_best_info_criterias_dat.csv"),  row.names=F)
   # write out summary overall dat
   write.csv(summary_overall, file=paste0(results_dir, "/summary_overall_dat.csv"), row.names=F)
 }
 RESULTS_DIR <- "data/symiin"
+#model_names <- MODEL_NAMES
+#true_ics <- TRUE_ICS
+#no_mc <- NO_MC
+#pop_values_dat <- POP_VALUES_DAT
+#pfa_colnames <- PFA_COLNAMES
+#pfa_colnamesfp <- PFA_COLNAMESFP
+#par_names <- PAR_NAMES
+#results_dir <- RESULTS_DIR
 main(MODEL_NAMES, TRUE_ICS, NO_MC, POP_VALUES_DAT, PFA_COLNAMES, PFA_COLNAMESFP, PAR_NAMES, RESULTS_DIR)
+
+
+
+
+

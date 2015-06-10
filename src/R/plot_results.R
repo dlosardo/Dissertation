@@ -1,6 +1,14 @@
 library(ggplot2)
 library(reshape2)
 
+informative_model_names <- function(dat){
+  dat$stationarity <- NULL
+  dat[dat$modelName %in% "PFAstat", "stationarity"] <- "Stationary"
+  dat[dat$modelName %in% "PFAnons", "stationarity"] <- "Non-Stationary"
+  dat[dat$modelName %in% "PFAnonsMild", "stationarity"] <- "Non-Stationary Mild"
+  dat[dat$modelName %in% "PFAnonsModerate", "stationarity"] <- "Non-Stationary Moderate"
+  return(dat)
+}
 prep_param_dat_for_plots <- function(dat){
   # remove initial condition
   dat <- dat[!dat$param_type %in% "init_cond", ]
@@ -12,7 +20,7 @@ prep_param_dat_for_plots <- function(dat){
                                     , levels = unique(paste0(modelName, "-", param_type))
                                     , labels = unique(paste0(modelName, ": ", param_type))))
   # create a character variable for Stationary vs. Non-Stationary model types
-  dat$stationarity <- with(dat, ifelse(modelName %in% "PFAstat", "Stationary", "Non-Stationary"))
+  dat <- informative_model_names(dat)
   # Rename simulation outcome variables
   dat <- rename(dat, c("bias" = "Bias", "rel_bias" = "Relative Bias", "rmse" = "RMSE", "coverage" = "Coverage"
                        , "sd_minus_se" = "SD MINUS SE", "power" = "Power"))
@@ -82,10 +90,10 @@ main <- function(convergence_dat_file, summary_params_file, summary_paramtype_fi
   
 }
   
-CONVERGENCE_DAT_FILE = "data/output/results/convergence_dat.csv"
-SUMMARY_PARAMS_FILE = "data/output/results/summary_params_dat.csv"
-SUMMARY_PARAMTYPE_FILE = "data/output/results/summary_paramtype_dat.csv"
-SUMMARY_BEST_INFO_CRITERIAS_FILE = "data/output/results/summary_best_info_criterias_dat.csv"
-SUMMARY_OVERALL_FILE = "data/output/results/summary_overall_dat.csv"
+CONVERGENCE_DAT_FILE = "data/symiin/convergence_dat.csv"
+SUMMARY_PARAMS_FILE = "data/symiin/summary_params_dat.csv"
+SUMMARY_PARAMTYPE_FILE = "data/symiin/summary_paramtype_dat.csv"
+SUMMARY_BEST_INFO_CRITERIAS_FILE = "data/symiin/summary_best_info_criterias_dat.csv"
+SUMMARY_OVERALL_FILE = "data/symiin/summary_overall_dat.csv"
 
 main(CONVERGENCE_DAT_FILE, SUMMARY_PARAMS_FILE, SUMMARY_PARAMTYPE_FILE, SUMMARY_BEST_INFO_CRITERIAS_FILE, SUMMARY_OVERALL_FILE)
